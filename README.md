@@ -6,7 +6,7 @@ Este projeto consiste no desenvolvimento de uma aplicação web interativa (dash
 
 ---
 
-## 💡 Storytelling & Diferenciais (Nota Máxima)
+## 💡 Storytelling & Diferenciais 
 
 A narrativa central do projeto é o **"Funil de Falhas"**. O dashboard guia o usuário na descoberta da taxa de insucesso dos tratamentos, que é um dos maiores desafios da pesquisa moderna.
 
