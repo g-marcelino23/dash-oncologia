@@ -1,85 +1,144 @@
+import dash_mantine_components as dmc
 from dash import html
-import dash_bootstrap_components as dbc
+from dash_iconify import DashIconify
 
-layout = dbc.Container([
-    # --- CABEÇALHO: O TEMA ---
-    dbc.Row([
-        dbc.Col(html.Div([
-            html.H1("🧬 Oncologia Digital: A Corrida pela Cura", className="display-4 text-primary mb-1"),
-            html.P("Projeto NP3: Visualização de Dados e Storytelling em Ensaios Clínicos.", className="lead text-muted"),
-            html.Hr(className="my-3"),
-            html.P("Esta ferramenta oferece uma visão em tempo real sobre o esforço global na pesquisa contra o câncer, com foco na transparência e no Funil de Falhas.", className="text-secondary")
-        ], className="h-100 p-5 bg-white border rounded-3 shadow-sm"), width=12) 
-    ], className="py-4"),
+# --- ICONES AUXILIARES ---
+icon_info = DashIconify(icon="carbon:information", width=20)
+icon_check = DashIconify(icon="carbon:checkmark-outline", width=20)
 
-    # --- SEÇÃO 1: O DESAFIO E O FUNIL DE FALHAS ---
-    dbc.Row([
-        dbc.Col(dbc.Card([
-            dbc.CardHeader(html.H4("1. O Desafio Científico: O Funil de Falhas", className="card-title text-danger")),
-            dbc.CardBody([
-                html.P(
-                    "O desenvolvimento de um novo tratamento oncológico é um processo longo, caro e de altíssimo risco. "
-                    "Historicamente, a taxa de sucesso de um medicamento que entra na Fase 1 e chega ao mercado é inferior a **10%**.", className="card-text fw-bold"
-                ),
-                html.P(
-                    "Este projeto nasceu para dar visibilidade a esse risco. Os dados, isolados, não contam a história; "
-                    "o desafio é transformar a 'mortalidade' dos estudos em uma **visualização intuitiva** (Gráfico de Barras), "
-                    "mostrando o esforço que 'encolhe' de fase para fase.", className="card-text"
-                ),
-            ])
-        ], color="light", outline=True, className="h-100"), width=6),
-        
-        # O que é Ensaio Clínico
-        dbc.Col(dbc.Card([
-            dbc.CardHeader(html.H4("Glossário: Ensaios e Fases", className="card-title text-info")),
-            dbc.CardBody([
-                html.P(
-                    html.Strong("Ensaio Clínico:"), " Estudo de pesquisa que avalia a segurança e eficácia de novos tratamentos em pacientes. É a etapa final antes da aprovação regulatória."
-                ),
-                html.Ul([
-                    html.Li(html.Strong("Fase 1 (Segurança):"), " Testes iniciais com poucos pacientes. Foco em dosagem e efeitos colaterais."),
-                    html.Li(html.Strong("Fase 3 (Confirmação):"), " Testes em larga escala (milhares de pacientes). Foco em provar que o tratamento é **superior** ao padrão atual."),
-                ]),
-            ])
-        ], color="light", outline=True, className="h-100"), width=6),
-    ], className="mb-4"),
+# --- CONTEÚDO ---
+content = dmc.Container([
+    
+    # 1. CABEÇALHO HERO (Impacto Visual)
+    dmc.Paper(
+        children=[
+            dmc.Group([
+                DashIconify(icon="medical-icon:i-oncology", width=60, color="#228be6"),
+                html.Div([
+                    dmc.Text(
+                        "Oncologia Digital: A Corrida pela Cura",
+                        variant="gradient",
+                        gradient={"from": "blue", "to": "cyan", "deg": 45},
+                        style={"fontSize": "2.5rem", "fontWeight": 900, "lineHeight": 1.1}
+                    ),
+                    dmc.Text(
+                        "Desmistificando a Complexidade dos Ensaios Clínicos Globais.",
+                        c="dimmed", size="lg", mt="xs"
+                    )
+                ])
+            ], mb="xl", align="center"),
+            
+            dmc.Divider(label="CONTEXTO CIENTÍFICO", labelPosition="center", mb="lg"),
+            
+            # BLOCO DE DESTAQUE (O Problema)
+            dmc.Blockquote(
+                "O desenvolvimento de uma nova droga oncológica leva em média 12 anos e custa mais de 2 bilhões de dólares. Mais de 90% das drogas falham antes de chegar ao mercado.",
+                cite="- The 'Valley of Death' in Drug Development",
+                icon=DashIconify(icon="carbon:warning-alt-filled", width=30),
+                color="red",
+                radius="md",
+                mb="xl"
+            ),
+        ],
+        shadow="xs", radius="lg", p="xl", withBorder=True, mb="xl"
+    ),
 
-    # --- SEÇÃO 2: A SOLUÇÃO EM DATAVIZ E ARQUITETURA ---
-    dbc.Row([
-        dbc.Col(dbc.Card([
-            dbc.CardHeader(html.H4("2. A Solução: Visualização Autoexplicativa", className="card-title text-success")),
-            dbc.CardBody([
-                html.P(
-                    "Nosso design prioriza a **clareza imediata (UX)**. Cada gráfico foi escolhido para ter um entendimento rápido, sem depender do conhecimento científico do usuário.", className="card-text fw-bold"
+    # 2. SEÇÃO EDUCACIONAL: O QUE SÃO AS FASES? (Timeline)
+    dmc.Title("1. A Jornada da Aprovação (Fases)", order=3, c="blue", mb="md"),
+    dmc.Paper(
+        dmc.Timeline(
+            active=1, # Indica que estamos "observando" o processo
+            bulletSize=30,
+            lineWidth=2,
+            children=[
+                # FASE 1
+                dmc.TimelineItem(
+                    title="Fase 1: Segurança (O Início)",
+                    bullet=DashIconify(icon="carbon:chemistry", width=15),
+                    children=[
+                        dmc.Text("Teste em um pequeno grupo (20-80 pessoas).", size="sm", c="dimmed"),
+                        dmc.Text("Objetivo: Descobrir se a droga é segura e qual a dose correta.", size="sm", fw=500),
+                    ]
                 ),
-                html.Ul([
-                    html.Li(html.Strong("Gráfico de Barras (Esforço Científico):"), " Substitui o Funil complexo por uma contagem simples, que revela a 'mortalidade' do risco de forma gráfica."),
-                    html.Li(html.Strong("Donut Chart (Foco da Pesquisa):"), " Mostra o percentual de intervenções (Droga, Cirurgia, etc.), direcionando o foco estratégico."),
-                    html.Li(html.Strong("Mapa Coroplético (Liderança Global):"), " Usa o preenchimento de cor do país (e não bolinhas) para mostrar o volume de pesquisa de forma intuitiva, corrigindo o problema de proporção."),
-                    html.Li(html.Strong("Tabela Condicional:"), " Cores na tabela indicam o status do estudo (Verde para 'Completo', Vermelho para 'Terminado'), agilizando a auditoria dos dados."),
-                ]),
-            ])
-        ], color="light", outline=True, className="h-100"), width=6),
+                # FASE 2
+                dmc.TimelineItem(
+                    title="Fase 2: Eficácia (A Prova)",
+                    bullet=DashIconify(icon="carbon:microscope", width=15),
+                    children=[
+                        dmc.Text("Teste em grupo médio (100-300 pessoas).", size="sm", c="dimmed"),
+                        dmc.Text("Objetivo: A droga funciona? Existem efeitos colaterais?", size="sm", fw=500),
+                    ]
+                ),
+                # FASE 3
+                dmc.TimelineItem(
+                    title="Fase 3: Confirmação (O Grande Teste)",
+                    bullet=DashIconify(icon="carbon:user-multiple", width=15),
+                    lineVariant="dashed",
+                    children=[
+                        dmc.Text("Milhares de pacientes em vários países.", size="sm", c="dimmed"),
+                        dmc.Text("Objetivo: Comparar com o tratamento padrão atual. É melhor do que o que já existe?", size="sm", fw=700, c="blue"),
+                    ]
+                ),
+                # FASE 4 / APROVAÇÃO
+                dmc.TimelineItem(
+                    title="Aprovação Regulatória (FDA/Anvisa)",
+                    bullet=DashIconify(icon="carbon:certificate-check", width=15),
+                    children=[
+                        dmc.Text("O medicamento chega ao mercado e continua sendo monitorado.", size="sm", c="dimmed"),
+                    ]
+                ),
+            ]
+        ),
+        p="xl", withBorder=True, radius="md", mb="xl"
+    ),
 
-        dbc.Col(dbc.Card([
-            dbc.CardHeader(html.H4("3. Arquitetura e Rastreabilidade (O Rigor Técnico)", className="card-title text-primary")),
-            dbc.CardBody([
-                html.P(
-                    html.Strong("Fonte de Dados:"), " API Pública do ClinicalTrials.gov (NIH/EUA). Garante que a informação é oficial e em tempo real."
-                ),
-                html.P(
-                    html.Strong("Tecnologias:"), " Construído em **Python Dash**, usando o framework **Plotly** para visualização e **Pandas** para a limpeza e transformação (ETL) dos dados brutos recebidos da API."
-                ),
-                html.P(
-                    html.Strong("Design Clínico:"), " Implementação do tema **Cerulean (Bootstrap)** para estética limpa e hospitalar, reforçando a seriedade do tema."
-                ),
-            ])
-        ], color="light", outline=True, className="h-100"), width=6),
-    ], className="mb-4"),
+    # 3. SEÇÃO TÉCNICA: COMO LER O DASHBOARD (Accordion)
+    dmc.Title("2. Guia de Leitura dos Dados", order=3, c="green", mb="md"),
+    dmc.Accordion(
+        variant="separated",
+        radius="md",
+        mb="xl",
+        children=[
+            dmc.AccordionItem(
+                [
+                    dmc.AccordionControl("📊 Gráfico de Barras: O Funil de Sobrevivência", icon=icon_info),
+                    dmc.AccordionPanel(
+                        "Este gráfico mostra a 'mortalidade' dos estudos. Você verá muitas barras grandes na Fase 1 e barras pequenas na Fase 3. Isso visualiza o risco financeiro e científico diminuindo conforme o funil avança."
+                    ),
+                ],
+                value="info-barras"
+            ),
+            dmc.AccordionItem(
+                [
+                    dmc.AccordionControl("🌍 Mapa Global: Onde a Ciência Acontece", icon=icon_info),
+                    dmc.AccordionPanel(
+                        "Identifica os países líderes em pesquisa. Note a concentração nos EUA e Europa, mas observe o crescimento da China e Brasil em ensaios clínicos recentes."
+                    ),
+                ],
+                value="info-mapa"
+            ),
+            dmc.AccordionItem(
+                [
+                    dmc.AccordionControl("🍩 Donut Chart: Estratégia Terapêutica", icon=icon_info),
+                    dmc.AccordionPanel(
+                        "Mostra O QUE está sendo testado. É uma nova Droga? Radiação? Genética? Isso revela a tendência tecnológica da indústria farmacêutica."
+                    ),
+                ],
+                value="info-donut"
+            ),
+        ]
+    ),
 
-    dbc.Row([
-        dbc.Col(dbc.Alert(
-            html.P(["Navegue para a aba ", html.Strong("🧪 DASHBOARD"), " para uma demonstração da aplicação em tempo real e em diferentes patologias."]), 
-            color="primary"), width=12)
-    ])
-], fluid=True, style={'minHeight': '80vh'})
+    # 4. CALL TO ACTION FINAL
+    dmc.Alert(
+        title="Pronto para explorar?",
+        children="Agora que você entende o processo, acesse a aba 'Dashboard Analítico' para ver esses dados em tempo real.",
+        color="blue",
+        variant="light",
+        icon=DashIconify(icon="carbon:arrow-right")
+    )
+
+], fluid=True, py="xl")
+
+# --- EXPORTAÇÃO (CRÍTICO PARA O MAIN.PY) ---
+layout = dmc.MantineProvider(content)
