@@ -2,143 +2,195 @@ import dash_mantine_components as dmc
 from dash import html
 from dash_iconify import DashIconify
 
-# --- ICONES AUXILIARES ---
+# --- ÍCONES AUXILIARES ---
 icon_info = DashIconify(icon="carbon:information", width=20)
 icon_check = DashIconify(icon="carbon:checkmark-outline", width=20)
+icon_alert = DashIconify(icon="carbon:warning", width=20)
+
+# --- COMPONENTE AUXILIAR: STAT CARD ---
+def create_stat_card(value, label, icon, color):
+    return dmc.Paper(
+        children=[
+            dmc.Group([
+                DashIconify(icon=icon, width=30, color=color),
+                dmc.Text(value, fw=700, size="xl", c="dark")
+            ]),
+            dmc.Text(label, size="sm", c="dimmed", mt="xs")
+        ],
+        p="md", radius="md", withBorder=True, shadow="sm"
+    )
 
 # --- CONTEÚDO ---
 content = dmc.Container([
     
-    # 1. CABEÇALHO HERO (Impacto Visual)
+    # 1. CABEÇALHO HERO
     dmc.Paper(
         children=[
             dmc.Group([
-                DashIconify(icon="medical-icon:i-oncology", width=60, color="#228be6"),
+                DashIconify(icon="medical-icon:i-oncology", width=80, color="#228be6"),
                 html.Div([
+                    dmc.Text("Oncologia Digital", c="blue", size="sm", fw=700, tt="uppercase", lts=2),
                     dmc.Text(
-                        "Oncologia Digital: A Corrida pela Cura",
+                        "A Corrida pela Cura",
                         variant="gradient",
                         gradient={"from": "blue", "to": "cyan", "deg": 45},
-                        style={"fontSize": "2.5rem", "fontWeight": 900, "lineHeight": 1.1}
+                        style={"fontSize": "3rem", "fontWeight": 900, "lineHeight": 1.1, "marginBottom": "10px"}
                     ),
                     dmc.Text(
-                        "Desmistificando a Complexidade dos Ensaios Clínicos Globais.",
-                        c="dimmed", size="lg", mt="xs"
+                        "Plataforma de Inteligência de Dados para Monitoramento de Ensaios Clínicos Globais.",
+                        c="dimmed", size="lg", maw=600
                     )
                 ])
             ], mb="xl", align="center"),
-            
-            dmc.Divider(label="CONTEXTO CIENTÍFICO", labelPosition="center", mb="lg"),
-            
-            # BLOCO DE DESTAQUE (O Problema)
-            dmc.Blockquote(
-                "O desenvolvimento de uma nova droga oncológica leva em média 12 anos e custa mais de 2 bilhões de dólares. Mais de 90% das drogas falham antes de chegar ao mercado.",
-                cite="- The 'Valley of Death' in Drug Development",
-                icon=DashIconify(icon="carbon:warning-alt-filled", width=30),
-                color="red",
-                radius="md",
-                mb="xl"
-            ),
         ],
-        shadow="xs", radius="lg", p="xl", withBorder=True, mb="xl"
+        shadow="xs", radius="lg", p="xl", withBorder=True, mb="xl", bg="gray.0"
     ),
 
-    # 2. SEÇÃO EDUCACIONAL: O QUE SÃO AS FASES? (Timeline)
-    dmc.Title("1. A Jornada da Aprovação (Fases)", order=3, c="blue", mb="md"),
+    # 2. O PROBLEMA (CONTEXTO)
+    dmc.Title("1. O Desafio da Pesquisa Médica", order=3, c="dark", mb="md"),
+    dmc.Grid(
+        gutter="md",
+        mb="xl",
+        children=[
+            # Coluna da Esquerda: Citação Impactante
+            dmc.GridCol(
+                dmc.Blockquote(
+                    "O 'Vale da Morte' na ciência refere-se à lacuna entre a descoberta básica e a aprovação clínica. Mais de 90% das drogas falham neste percurso devido à falta de eficácia ou segurança.",
+                    cite="- National Institutes of Health (NIH)",
+                    icon=icon_alert,
+                    color="red",
+                    radius="md",
+                    h="100%" # Altura total
+                ), span={"base": 12, "md": 7}
+            ),
+            # Coluna da Direita: Estatísticas Rápidas
+            dmc.GridCol(
+                dmc.Stack([
+                    create_stat_card("12 Anos", "Tempo médio para aprovação de nova droga", "carbon:time", "blue"),
+                    create_stat_card("US$ 2.6 Bi", "Custo médio de P&D por medicamento", "carbon:currency-dollar", "green"),
+                    create_stat_card("10%", "Taxa de sucesso da Fase 1 até Aprovação", "carbon:chart-line-smooth", "orange"),
+                ]), span={"base": 12, "md": 5}
+            )
+        ]
+    ),
+
+    dmc.Divider(mb="xl"),
+
+    # 3. JORNADA DA APROVAÇÃO (TIMELINE)
+    dmc.Title("2. Entendendo o Processo (Fases)", order=3, c="blue", mb="md"),
+    dmc.Text(
+        "Para navegar no dashboard, é crucial entender o ciclo de vida de um estudo clínico. Nossa ferramenta rastreia todas estas etapas:",
+        c="dimmed", mb="lg"
+    ),
     dmc.Paper(
         dmc.Timeline(
-            active=1, # Indica que estamos "observando" o processo
-            bulletSize=30,
-            lineWidth=2,
+            active=2,
+            bulletSize=40,
+            lineWidth=3,
             children=[
-                # FASE 1
                 dmc.TimelineItem(
-                    title="Fase 1: Segurança (O Início)",
-                    bullet=DashIconify(icon="carbon:chemistry", width=15),
+                    title="Fase 1: Segurança",
+                    bullet=DashIconify(icon="carbon:chemistry", width=20),
                     children=[
-                        dmc.Text("Teste em um pequeno grupo (20-80 pessoas).", size="sm", c="dimmed"),
-                        dmc.Text("Objetivo: Descobrir se a droga é segura e qual a dose correta.", size="sm", fw=500),
+                        dmc.Text("Foco: Avaliar segurança e dosagem em pequeno grupo (20-100).", size="sm", c="dimmed"),
+                        dmc.Badge("Risco Alto", color="red", variant="light", mt="xs")
                     ]
                 ),
-                # FASE 2
                 dmc.TimelineItem(
-                    title="Fase 2: Eficácia (A Prova)",
-                    bullet=DashIconify(icon="carbon:microscope", width=15),
+                    title="Fase 2: Eficácia",
+                    bullet=DashIconify(icon="carbon:microscope", width=20),
                     children=[
-                        dmc.Text("Teste em grupo médio (100-300 pessoas).", size="sm", c="dimmed"),
-                        dmc.Text("Objetivo: A droga funciona? Existem efeitos colaterais?", size="sm", fw=500),
+                        dmc.Text("Foco: A droga funciona? Grupo médio (100-300).", size="sm", c="dimmed"),
+                        dmc.Badge("Prova de Conceito", color="yellow", variant="light", mt="xs")
                     ]
                 ),
-                # FASE 3
                 dmc.TimelineItem(
-                    title="Fase 3: Confirmação (O Grande Teste)",
-                    bullet=DashIconify(icon="carbon:user-multiple", width=15),
+                    title="Fase 3: Confirmação",
+                    bullet=DashIconify(icon="carbon:user-multiple", width=20),
                     lineVariant="dashed",
                     children=[
-                        dmc.Text("Milhares de pacientes em vários países.", size="sm", c="dimmed"),
-                        dmc.Text("Objetivo: Comparar com o tratamento padrão atual. É melhor do que o que já existe?", size="sm", fw=700, c="blue"),
+                        dmc.Text("Foco: Comparação com tratamento padrão em larga escala (1.000+).", size="sm", fw=700),
+                        dmc.Badge("Decisivo", color="green", variant="filled", mt="xs")
                     ]
                 ),
-                # FASE 4 / APROVAÇÃO
                 dmc.TimelineItem(
-                    title="Aprovação Regulatória (FDA/Anvisa)",
-                    bullet=DashIconify(icon="carbon:certificate-check", width=15),
+                    title="Fase 4: Aprovação & Monitoramento",
+                    bullet=DashIconify(icon="carbon:certificate-check", width=20),
                     children=[
-                        dmc.Text("O medicamento chega ao mercado e continua sendo monitorado.", size="sm", c="dimmed"),
+                        dmc.Text("Foco: Farmacovigilância pós-comercialização.", size="sm", c="dimmed"),
                     ]
                 ),
             ]
         ),
-        p="xl", withBorder=True, radius="md", mb="xl"
+        p="xl", withBorder=True, radius="md", mb="xl", bg="white"
     ),
 
-    # 3. SEÇÃO TÉCNICA: COMO LER O DASHBOARD (Accordion)
-    dmc.Title("2. Guia de Leitura dos Dados", order=3, c="green", mb="md"),
+    # 4. SOBRE A FERRAMENTA (ARQUITETURA)
+    dmc.Title("3. Metodologia e Fonte de Dados", order=3, c="dark", mb="md"),
+    dmc.Paper(
+        children=[
+            dmc.Text(
+                "Este dashboard conecta-se diretamente a bases de dados públicas para garantir transparência.", 
+                mb="md"
+            ),
+            dmc.SimpleGrid(
+                cols={"base": 1, "sm": 3},
+                spacing="lg",
+                children=[
+                    dmc.Stack([
+                        DashIconify(icon="carbon:data-base", width=30, color="gray"),
+                        dmc.Text("Fonte: ClinicalTrials.gov", fw=700),
+                        dmc.Text("Dados oficiais da Biblioteca Nacional de Medicina dos EUA.", size="sm", c="dimmed")
+                    ]),
+                    dmc.Stack([
+                        DashIconify(icon="carbon:code", width=30, color="blue"),
+                        dmc.Text("Processamento: Python", fw=700),
+                        dmc.Text("Limpeza e padronização de nomes de países e status.", size="sm", c="dimmed")
+                    ]),
+                    dmc.Stack([
+                        DashIconify(icon="carbon:dashboard", width=30, color="cyan"),
+                        dmc.Text("Visualização: Dash", fw=700),
+                        dmc.Text("Interface interativa para exploração ágil.", size="sm", c="dimmed")
+                    ])
+                ]
+            )
+        ],
+        p="lg", withBorder=True, radius="md", mb="xl"
+    ),
+
+    # 5. GUIA DE LEITURA
+    dmc.Title("4. Guia de Interpretação Visual", order=3, c="green", mb="md"),
     dmc.Accordion(
         variant="separated",
         radius="md",
         mb="xl",
         children=[
-            dmc.AccordionItem(
-                [
-                    dmc.AccordionControl("📊 Gráfico de Barras: O Funil de Sobrevivência", icon=icon_info),
-                    dmc.AccordionPanel(
-                        "Este gráfico mostra a 'mortalidade' dos estudos. Você verá muitas barras grandes na Fase 1 e barras pequenas na Fase 3. Isso visualiza o risco financeiro e científico diminuindo conforme o funil avança."
-                    ),
-                ],
-                value="info-barras"
-            ),
-            dmc.AccordionItem(
-                [
-                    dmc.AccordionControl("🌍 Mapa Global: Onde a Ciência Acontece", icon=icon_info),
-                    dmc.AccordionPanel(
-                        "Identifica os países líderes em pesquisa. Note a concentração nos EUA e Europa, mas observe o crescimento da China e Brasil em ensaios clínicos recentes."
-                    ),
-                ],
-                value="info-mapa"
-            ),
-            dmc.AccordionItem(
-                [
-                    dmc.AccordionControl("🍩 Donut Chart: Estratégia Terapêutica", icon=icon_info),
-                    dmc.AccordionPanel(
-                        "Mostra O QUE está sendo testado. É uma nova Droga? Radiação? Genética? Isso revela a tendência tecnológica da indústria farmacêutica."
-                    ),
-                ],
-                value="info-donut"
-            ),
+            dmc.AccordionItem([
+                dmc.AccordionControl("📊 Barras: O Funil de Sobrevivência", icon=icon_info),
+                dmc.AccordionPanel("Visualiza a quantidade de estudos em cada etapa. Barras decrescentes indicam a dificuldade de avançar da Fase 1 para a 3.")
+            ], value="barras"),
+            dmc.AccordionItem([
+                dmc.AccordionControl("🌍 Mapa: Geopolítica da Ciência", icon=icon_info),
+                dmc.AccordionPanel("Cores mais escuras indicam maior volume de pesquisa. Cinza indica ausência de dados públicos registrados.")
+            ], value="mapa"),
+            dmc.AccordionItem([
+                dmc.AccordionControl("🔴🟢 Tabela: Status em Tempo Real", icon=icon_info),
+                dmc.AccordionPanel("Use as cores para triagem rápida: Verde (Concluído), Azul (Recrutando) e Vermelho (Suspenso/Terminado).")
+            ], value="tabela"),
         ]
     ),
 
-    # 4. CALL TO ACTION FINAL
+    # 6. FOOTER / CTA
     dmc.Alert(
-        title="Pronto para explorar?",
-        children="Agora que você entende o processo, acesse a aba 'Dashboard Analítico' para ver esses dados em tempo real.",
+        title="Exploração Interativa",
+        children="Acesse a aba 'Dashboard Analítico' acima para manipular estes dados em tempo real.",
         color="blue",
-        variant="light",
-        icon=DashIconify(icon="carbon:arrow-right")
+        variant="filled",
+        icon=DashIconify(icon="carbon:arrow-right"),
+        mb="xl"
     )
 
-], fluid=True, py="xl")
+], fluid=True, py="xl", style={"maxWidth": "1200px"})
 
-# --- EXPORTAÇÃO (CRÍTICO PARA O MAIN.PY) ---
-layout = dmc.MantineProvider(content)
+# --- EXPORTAÇÃO ---
+layout = html.Div(content)
