@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc 
 
 app = dash.Dash(__name__, 
-                external_stylesheets=[dbc.themes.CERULEAN, dmc.styles.ALL], 
+                external_stylesheets=[dbc.themes.CERULEAN,], 
                 suppress_callback_exceptions=True)
 
 server = app.server
