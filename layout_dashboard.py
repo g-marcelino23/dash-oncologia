@@ -1,8 +1,9 @@
 from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
+import dash_mantine_components as dmc
+from dash_iconify import DashIconify 
 
-# DICA: Ao iniciar o app, use: app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
-
+# --- CONFIGURAÇÕES ---
 CANCER_OPTIONS = [
     {'label': 'Câncer de Mama (Breast)', 'value': 'Breast Cancer'},
     {'label': 'Câncer de Pulmão (Lung)', 'value': 'Lung Cancer'},
@@ -12,89 +13,97 @@ CANCER_OPTIONS = [
     {'label': 'Tumor Cerebral', 'value': 'Brain Tumor'},
 ]
 
-# Componente de Cartão de KPI Reutilizável
-def draw_kpi(title, id_value, color="primary", icon="📊"):
-    return dbc.Card(
-        dbc.CardBody([
-            html.Div([
-                html.H6(title, className="text-uppercase text-muted small fw-bold mb-2"),
-                html.H2(id=id_value, children="0", className=f"display-4 fw-bold text-{color}")
-            ])
-        ]),
-        className="h-100 shadow-sm border-0 border-start border-4 border-" + color
-    )
+def draw_kpi_modern(title, id_value, color="blue", icon="tabler:chart-bar"):
+    return dmc.Paper([
+        dmc.Group([
+            dmc.Stack([
+                dmc.Text(title, c="dimmed", size="xs", fw=700, tt="uppercase"),
+                html.H2(id=id_value, children="0", className=f"m-0 text-{color}", style={"fontSize": "2rem"})
+            ], gap=0),
+            dmc.ThemeIcon(DashIconify(icon=icon, width=22), size="lg", radius="xl", color=color, variant="light")
+        ], justify="space-between", align="center")
+    ], p="md", radius="md", shadow="sm", withBorder=True)
 
-layout = dbc.Container([
-    # 1. Cabeçalho Principal
-    dbc.Row([
-        dbc.Col(html.H2("🔬 Monitoramento de Ensaios Clínicos", className="fw-bold text-dark"), width=12),
-        dbc.Col(html.P("Visão global do progresso científico oncológico.", className="text-muted"), width=12),
-        html.Hr(className="my-2")
-    ], className="mb-4"),
+# --- LAYOUT LIMPO ---
+layout = dmc.MantineProvider(
+    forceColorScheme="light",
+    theme={"primaryColor": "cyan", "fontFamily": "'Inter', sans-serif"},
+    children=[
+        # Fundo cinza claro para toda a página
+        html.Div(style={"backgroundColor": "#f8f9fa", "minHeight": "100vh", "padding": "20px"}, children=[
+            
+            dmc.Container([
+                # 1. CABEÇALHO SIMPLIFICADO
+                dmc.Group([
+                    dmc.ThemeIcon(DashIconify(icon="tabler:activity-heartbeat", width=30), size="xl", radius="md", color="cyan", variant="filled"),
+                    dmc.Stack([
+                        dmc.Text("ONCOLOGIA DIGITAL", fw=800, size="xl", lh=1, c="dark"),
+                        dmc.Text("Painel de Monitoramento de Ensaios Clínicos", c="dimmed", size="sm")
+                    ], gap=0)
+                ], mb="xl"),
 
-    # 2. Barra de Controle (Card Flutuante)
-    dbc.Card([
-        dbc.CardBody([
-            dbc.Row([
-                dbc.Col([
-                    html.Label("SELECIONE A PATOLOGIA", className="small fw-bold text-secondary mb-1"),
-                    dcc.Dropdown(
-                        id='dropdown-condicao',
-                        options=CANCER_OPTIONS,
-                        value='Breast Cancer',
-                        clearable=False,
-                        className="mb-0"
-                    )
-                ], width=12, md=8),
-                dbc.Col([
-                    html.Label("AÇÃO", className="small fw-bold text-secondary mb-1"),
-                    dbc.Button([html.Span("🔎"), " SCAN GLOBAL"], id="btn-scan", color="primary", className="w-100 fw-bold")
-                ], width=12, md=4)
-            ], className="align-items-end")
-        ])
-    ], className="shadow-sm border-0 mb-4 bg-white"),
+                # 2. BARRA DE CONTROLE (FILTROS)
+                dmc.Paper([
+                    dbc.Row([
+                        dbc.Col([
+                            dmc.Select(
+                                id='dropdown-condicao',
+                                label="Selecione a Patologia",
+                                data=CANCER_OPTIONS,
+                                value='Breast Cancer',
+                                leftSection=DashIconify(icon="tabler:virus"),
+                                clearable=False,
+                                searchable=True
+                            )
+                        ], width=12, md=9),
+                        dbc.Col([
+                            dmc.Button("ATUALIZAR DADOS", id="btn-scan", fullWidth=True, size="md", leftSection=DashIconify(icon="tabler:refresh"), color="cyan", mt=24)
+                        ], width=12, md=3)
+                    ])
+                ], p="lg", shadow="sm", radius="md", withBorder=True, mb="lg"),
 
-    # 3. KPIs
-    dbc.Row([
-        dbc.Col(draw_kpi("Total de Ensaios Ativos", "kpi-total", "primary"), width=12, md=6),
-        dbc.Col(draw_kpi("Em Fase 3 (Confirmação)", "kpi-fase3", "success"), width=12, md=6),
-    ], className="g-4 mb-4"),
+                # 3. KPIS
+                dbc.Row([
+                    dbc.Col(draw_kpi_modern("Total de Ensaios", "kpi-total", "cyan", "tabler:flask"), width=12, md=6),
+                    dbc.Col(draw_kpi_modern("Estudos Fase 3", "kpi-fase3", "teal", "tabler:checkbox"), width=12, md=6),
+                ], className="g-3 mb-4"),
 
-    # 4. Gráficos Linha 1
-    dbc.Row([
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("1. O Esforço Científico (Fases)", className="bg-transparent fw-bold border-0"),
-                dbc.CardBody(dcc.Graph(id='graph-stacked-phase', style={'height': '350px'}))
-            ], className="shadow-sm border-0 h-100"), 
-            width=12, lg=6
-        ),
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("2. Foco da Pesquisa", className="bg-transparent fw-bold border-0"),
-                dbc.CardBody(dcc.Graph(id='graph-treemap', style={'height': '350px'}))
-            ], className="shadow-sm border-0 h-100"), 
-            width=12, lg=6
-        ),
-    ], className="g-4 mb-4"),
+                # 4. GRÁFICOS PRINCIPAIS
+                dbc.Row([
+                    dbc.Col(
+                        dmc.Paper([
+                            dmc.Group([
+                                DashIconify(icon="tabler:chart-pie", color="gray"),
+                                dmc.Text("Distribuição por Fases", fw=700, size="sm")
+                            ], mb="md"),
+                            dcc.Graph(id='graph-stacked-phase', style={'height': '350px'}, config={'displayModeBar': False})
+                        ], p="md", shadow="sm", radius="md", withBorder=True), 
+                        width=12, lg=6, className="mb-3"
+                    ),
+                    dbc.Col(
+                        dmc.Paper([
+                            dmc.Group([
+                                DashIconify(icon="tabler:layout-grid", color="gray"),
+                                dmc.Text("Mapa de Hierarquia (Treemap)", fw=700, size="sm")
+                            ], mb="md"),
+                            dcc.Graph(id='graph-treemap', style={'height': '350px'}, config={'displayModeBar': False})
+                        ], p="md", shadow="sm", radius="md", withBorder=True), 
+                        width=12, lg=6, className="mb-3"
+                    ),
+                ], className="g-3"),
 
-    # 5. Mapa Global
-    dbc.Row([
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("3. Liderança Global em Pesquisa", className="bg-transparent fw-bold border-0"),
-                dbc.CardBody(dcc.Graph(id='graph-map-geo', style={'height': '450px'}))
-            ], className="shadow-sm border-0"), 
-            width=12
-        ),
-    ], className="mb-4"),
+                # 5. MAPA GLOBAL
+                dmc.Paper([
+                    dmc.Group([
+                        DashIconify(icon="tabler:world", color="gray"),
+                        dmc.Text("Abrangência Global da Pesquisa", fw=700, size="sm")
+                    ], mb="md"),
+                    dcc.Graph(id='graph-map-geo', style={'height': '500px'})
+                ], p="md", shadow="sm", radius="md", withBorder=True, mb="lg", mt="sm"),
 
-    # 6. Tabela Detalhada
-    dbc.Row([
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("4. Detalhamento dos Ensaios", className="bg-white fw-bold border-0"),
-                dbc.CardBody(
+                # 6. TABELA DE DADOS
+                dmc.Paper([
+                    dmc.Text("Detalhamento dos Ensaios", fw=700, size="sm", mb="md"),
                     dash_table.DataTable(
                         id='table-details',
                         columns=[
@@ -104,19 +113,19 @@ layout = dbc.Container([
                             {"name": "Status", "id": "Status"},
                         ],
                         page_size=10,
-                        style_as_list_view=True,  # Estilo mais limpo (sem bordas verticais)
-                        style_header={'backgroundColor': 'white', 'fontWeight': 'bold', 'borderBottom': '2px solid #eee'},
-                        style_cell={'padding': '12px', 'fontFamily': 'sans-serif', 'fontSize': '14px'},
+                        style_as_list_view=True,
+                        cell_selectable=False,
+                        style_header={'backgroundColor': '#f1f3f5', 'fontWeight': 'bold', 'borderBottom': '1px solid #dee2e6'},
+                        style_cell={'padding': '12px', 'textAlign': 'left', 'fontFamily': 'Inter, sans-serif', 'fontSize': '13px'},
                         style_data_conditional=[
-                            {'if': {'filter_query': '{Status} = "COMPLETED"'}, 'color': '#198754', 'fontWeight': 'bold'},
-                            {'if': {'filter_query': '{Status} = "RECRUITING"'}, 'color': '#0d6efd', 'fontWeight': 'bold'},
-                            {'if': {'filter_query': '{Status} = "TERMINATED"'}, 'color': '#dc3545', 'fontWeight': 'bold'},
+                            {'if': {'filter_query': '{Status} = "COMPLETED"'}, 'color': '#2b8a3e', 'fontWeight': 'bold'},
+                            {'if': {'filter_query': '{Status} = "RECRUITING"'}, 'color': '#1864ab', 'fontWeight': 'bold'},
+                            {'if': {'filter_query': '{Status} = "TERMINATED"'}, 'color': '#c92a2a', 'fontWeight': 'bold'},
                         ]
                     )
-                )
-            ], className="shadow-sm border-0"), 
-            width=12
-        )
-    ])
+                ], p="md", shadow="sm", radius="md", withBorder=True, mb="xl")
 
-], fluid=True, className="bg-light p-4", style={"minHeight": "100vh"})
+            ], fluid=True, style={"maxWidth": "1400px"}) 
+        ])
+    ]
+)
